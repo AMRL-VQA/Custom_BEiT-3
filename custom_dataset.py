@@ -17,7 +17,7 @@ from timm.data.transforms import RandomResizedCropAndInterpolation
 from randaug import RandomAugment
 from transformers import XLMRobertaTokenizer
 
-current_path = os.getcwd()
+current_path = os.path.dirname(os.path.realpath(__file__))
 custom_dataset_path = os.path.join(current_path, 'custom_dataset')
 tokenizer_path = os.path.join(current_path,'model','beit3.spm')
 default_tokenizer = XLMRobertaTokenizer(tokenizer_path)
@@ -45,8 +45,8 @@ def build_transform(is_train, img_size):
 
     return t
 
-class CustomVQATestDataset(Dataset):
-    def __init__(self, data_path = custom_dataset_path, tokenizer = default_tokenizer,img_size=480, is_train=False, **kwargs):
+class CustomVQADataset(Dataset):
+    def __init__(self, data_path = custom_dataset_path, tokenizer = default_tokenizer, img_size=480, is_train=False, **kwargs):
         self.data_path = data_path
         self.tokenizer = tokenizer
         self.img_size = img_size
@@ -69,19 +69,22 @@ class CustomVQATestDataset(Dataset):
         self.ans2label = ans2label
         self.label2ans = label2ans
 
-        json_path = os.path.join(custom_dataset_path, 'custom.vqa.test.jsonl')
-        self.test_dataframe = pd.read_json(path_or_buf=json_path, lines=True)
+        if is_train:
+            jsonl_path = os.path.join(self.data_path,'custom.vqa.train.jsonl')
+        else:
+            jsonl_path = os.path.join(self.data_path, 'custom.vqa.test.jsonl')
+        self.dataframe = pd.read_json(path_or_buf=jsonl_path, lines=True)
 
         self.transform = build_transform(self.is_train, self.img_size)
         
 
     def __len__(self):
-        return len(self.test_dataframe)
+        return len(self.dataframe)
 
     def __getitem__(self, idx):
-        row = self.test_dataframe.iloc[idx]
+        row = self.dataframe.iloc[idx]
 
-        img_name = os.path.join(custom_dataset_path, row['image_path'])
+        img_name = os.path.join(self.data_path, row['image_path'])
         image = Image.open(img_name).convert('RGB')
         image = self.transform(image)
 

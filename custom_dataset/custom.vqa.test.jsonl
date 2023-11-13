@@ -1,9 +1,8 @@
+{"image_path": "image\\COCO_train2014_000000000009.jpg", "question": "쿠키가 몇개 보입니까?"}
 {"image_path": "image\\COCO_train2014_000000000009.jpg", "question": "How many cookies can be seen?"}
 {"image_path": "image\\COCO_train2014_000000000009.jpg", "question": "Is there a broccoli?"}
 {"image_path": "image\\HRTeam_edit.jpg", "question": "How many people can be seen?"}
 {"image_path": "image\\HRTeam_edit.jpg", "question": "Is there a girl?"}
 {"image_path": "image\\lab_dinner_party_20230831.jpg", "question": "How many people can be seen?"}
 {"image_path": "image\\UAM.jpg", "question": "How many air vehicle can be seen?"}
-
-
-
+{"image_path": "image\\alphabet.jpg", "question": "What are the letters written in the image?"}
