@@ -19,6 +19,7 @@ from transformers import XLMRobertaTokenizer
 
 current_path = os.path.dirname(os.path.realpath(__file__))
 custom_dataset_path = os.path.join(current_path, 'custom_dataset')
+default_jsonl_path = os.path.join(custom_dataset_path, 'custom.vqa.test.jsonl')
 tokenizer_path = os.path.join(current_path,'model','beit3.spm')
 default_tokenizer = XLMRobertaTokenizer(tokenizer_path)
 
@@ -46,14 +47,14 @@ def build_transform(is_train, img_size):
     return t
 
 class CustomVQADataset(Dataset):
-    def __init__(self, data_path = custom_dataset_path, tokenizer = default_tokenizer, img_size=480, is_train=False, **kwargs):
-        self.data_path = data_path
+    def __init__(self, jsonl_path = default_jsonl_path, tokenizer = default_tokenizer, img_size=480, is_train=False, **kwargs):
+        self.jsonl_path = jsonl_path
         self.tokenizer = tokenizer
         self.img_size = img_size
         self.is_train = is_train
 
 
-        ans2label_file = os.path.join(data_path, "answer2label.txt")
+        ans2label_file = os.path.join(custom_dataset_path, "answer2label.txt")
         ans2label = {}
         label2ans = []
         with open(ans2label_file, mode="r", encoding="utf-8") as reader:
@@ -69,11 +70,10 @@ class CustomVQADataset(Dataset):
         self.ans2label = ans2label
         self.label2ans = label2ans
 
-        if is_train:
-            jsonl_path = os.path.join(self.data_path,'custom.vqa.train.jsonl')
-        else:
-            jsonl_path = os.path.join(self.data_path, 'custom.vqa.test.jsonl')
-        self.dataframe = pd.read_json(path_or_buf=jsonl_path, lines=True)
+        if self.jsonl_path == default_jsonl_path and is_train:
+            self.jsonl_path = os.path.join(custom_dataset_path,'custom.vqa.train.jsonl')
+        
+        self.dataframe = pd.read_json(path_or_buf=self.jsonl_path, lines=True)
 
         self.transform = build_transform(self.is_train, self.img_size)
         
@@ -84,7 +84,7 @@ class CustomVQADataset(Dataset):
     def __getitem__(self, idx):
         row = self.dataframe.iloc[idx]
 
-        img_name = os.path.join(self.data_path, row['image_path'])
+        img_name = os.path.join(custom_dataset_path, row['image_path'])
         image = Image.open(img_name).convert('RGB')
         image = self.transform(image)
 

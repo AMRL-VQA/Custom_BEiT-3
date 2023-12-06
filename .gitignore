@@ -5,3 +5,7 @@ model/beit3_large_indomain_patch16_768_vgqaaug_vqa.zip
 custom_dataset/Training/
 custom_dataset/Validation/
 test.py
+*.jsonl
+__pycache__/custom_dataset.cpython-311.pyc
+custom_dataset/custom.vqa.test.jsonl
+.vscode/settings.json
